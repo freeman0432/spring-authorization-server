@@ -50,7 +50,7 @@ public class AuthorizationServerConfig {
 				.clientAuthenticationMethod(ClientAuthenticationMethod.BASIC)
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-				.redirectUri("http://localhost:8080/authorized")
+				.redirectUri("http://localhost:1024/swagger-ui/oauth2-redirect.html")
 				.scope("message.read")
 				.scope("message.write")
 				.build();

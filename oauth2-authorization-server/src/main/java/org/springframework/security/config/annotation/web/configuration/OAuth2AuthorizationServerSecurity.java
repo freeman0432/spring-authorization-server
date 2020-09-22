@@ -15,15 +15,22 @@
  */
 package org.springframework.security.config.annotation.web.configuration;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.web.OAuth2TokenEndpointFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -49,14 +56,37 @@ public class OAuth2AuthorizationServerSecurity extends WebSecurityConfigurerAdap
 						.anyRequest().authenticated()
 			)
 			.formLogin(withDefaults())
-			.csrf(csrf -> csrf.ignoringRequestMatchers(tokenEndpointMatcher()))
+			.csrf(csrf -> csrf.ignoringRequestMatchers(tokenEndpointMatcher(),tokenOptionsEndpointMatcher() ))
 			.apply(authorizationServerConfigurer);
+//		http.cors(withDefaults());
 	}
+
+//	@Override
+//	public void configure(WebSecurity web) throws Exception {
+//		web.ignoring()
+//				.antMatchers(HttpMethod.OPTIONS);
+//	}
 	// @formatter:on
+
+//	@Bean
+//	CorsConfigurationSource corsConfigurationSource() {
+//		CorsConfiguration configuration = new CorsConfiguration();
+//		configuration.setAllowedOrigins(Arrays.asList("http://localhost:1024"));
+//		configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//		source.registerCorsConfiguration("/**", configuration);
+//		return source;
+//	}
 
 	private static RequestMatcher tokenEndpointMatcher() {
 		return new AntPathRequestMatcher(
 				OAuth2TokenEndpointFilter.DEFAULT_TOKEN_ENDPOINT_URI,
 				HttpMethod.POST.name());
+	}
+
+	private static RequestMatcher tokenOptionsEndpointMatcher() {
+		return new AntPathRequestMatcher(
+				OAuth2TokenEndpointFilter.DEFAULT_TOKEN_ENDPOINT_URI,
+				HttpMethod.OPTIONS.name());
 	}
 }
